@@ -1,0 +1,54 @@
+Sqlite 
+commands
+
+to load a database navigate to the folder in command prompt and type
+cd your/file/path/chinook_db
+sqlite3 chinook.db
+sqlite>
+
+Running some basic commands
+You can use the .help command at any time to find details about all your new database functions.
+sqlite> .help
+Try .tables to see what tables are in your database.
+sqlite> .tables
+If you're interested in the schema of your tables the .schema command is perfect for you.
+sqlite> .schema Album
+
+CREATE TABLE [Album]
+(
+[AlbumId] INTEGER  NOT NULL,
+[Title] NVARCHAR(160)  NOT NULL,
+[ArtistId] INTEGER  NOT NULL,
+CONSTRAINT [PK_Album] PRIMARY KEY  ([AlbumId]),
+FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId]) 
+    ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+CREATE UNIQUE INDEX [IPK_Album] ON [Album]([AlbumId]);
+CREATE INDEX [IFK_AlbumArtistId] ON [Album] ([ArtistId]);
+The .schema command returns a ton of useful information so it's worth understanding what's going on here.
+From this output you can see the table name, column names, datatypes, primary keys, and foreign keys. You've seen all of these before but maybe not collected together so densely.
+Here's a quick breakdown of sections that are important for you starting out.
+CREATE TABLE [Album] <-- This is the table name, Album.
+
+[AlbumId] <---These are your column names
+[Title]       This table has 3.
+[ArtistId]    AlbumId, Title, ArtistId
+
+            INTEGER,       <---Next are the datatypes
+            NVARCHAR(160),     Each column needs a datatype
+            INTEGER,           You learned these last lesson!         
+The rest of the output you see are various CONSTRAINTS placed on the database. Databases have primary keys, foreign keys, and NULL value constraints.
+This is what these lines are doing. You'll learn how to do this later. For now you can focus finding the table and column names.
+NOTE: If you don't specify a table the .schema command will return the schema for all tables in the database. 
+
+Start Querying your Data!
+The Chinook database is an iTunes library representing a digital music store. We'll be getting very familiar with this database throughout these problem sets. If you want some more information on this database have a look at the Chinook database homepage.
+So now you've seen the table names in this database. Let's have a look at all the data from the Invoice table.
+sqlite> SELECT * FROM Invoice;
+Your first query, AWESOME!
+Now check out what's in the Employee table.
+sqlite> SELECT * FROM Employee;
+Can you find anything interesting about the other tables in your database?
+Stay curious, explore everything!
+When you're all done exploring you can .exit the database.
+sqlite> .exit

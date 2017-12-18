@@ -1,0 +1,64 @@
+---
+title: "human_resource"
+author: "Sai Saketh Boyanapalli"
+date: "October 9, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+https://www.kaggle.com/ludobenistant/hr-analytics/data
+This dataset contains information on 14999 employees on 10 different feilds such as there satisfaction level, Average monthly hours worked, No of projects, Did they leave company, Time spent at the company and many other variables.  
+```{r}
+employee <- read.csv("HR.csv")
+dim(employee)
+str(employee)
+aggr(employee)
+```
+WE can see that there is no missingness in data.
+```{r}
+ggplot(melt(employee[,1:8]), aes(factor(variable), value))+ 
+  geom_boxplot() + facet_wrap(~variable, scale="free") +
+  xlab("Predictors") +
+  ggtitle("Boxplot of predictor variables")
+```
+Here we can see few outliers in our data as indicated by boxplot. All these outliers are not really outliers. For example if we take work_accident the values are binary so, seeing value 1 as outlier is a good indication that there were very few accidents during work. if we look at promotion over last 5 years only 1 person was promoted which might be a bad indication and might decrease employee satisfaction.
+
+```{r}
+ggplot(aes(x = satisfaction_level), data = employee) +
+  geom_histogram(binwidth = .25) +
+  facet_wrap(~salary)
+```
+From the above plot we can see that distribution for satisfaction_level is similar for 3 Salary groups. but the we can see that there are few people with high salaries compared to medium and low salaries.
+```{r}
+ggplot(aes(x = satisfaction_level, y = last_evaluation), data = employee) +
+  geom_point(alpha = 1/20, position = 'jitter') +
+  ggtitle('Relationship between Satisfaction_level and last_evaluated Satisfaction')
+```
+Here we can see that except one particular group which significantly had an impact on satisfaction. The rest of data tends to show a slightly positive relation.
+```{r}
+cor.test(employee$satisfaction_level,employee$last_evaluation)
+```
+Pearson's corelation shows there is no corelation this might be due to that particular group. 
+```{r}
+ggplot(aes(x = average_montly_hours), data = employee) +
+  geom_freqpoly(binwidth = 10, aes(color = salary))
+```
+```{r}
+ggplot(aes(x = time_spend_company), data = employee) +
+  geom_histogram(binwidth = 2)
+```
+This ditribution of time spend in a company is skewed to left that shows many people spend less than 4 years at a particular company.
+```{r}
+summary(employee$time_spend_company) # for more accurate imformation
+```
+```{r}
+library(dplyr)
+hoursSpendSalary <- employee %>%
+  group_by(salary) %>%
+  summarise(average_monthly_hours_salary = mean(average_montly_hours), median_hours_spend_salary = median(as.numeric(average_montly_hours)), n = n())
+hoursSpendSalary  
+```
+Irrespective of salary we can see that people spend same time on average.

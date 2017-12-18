@@ -1,0 +1,111 @@
+---
+
+title: "Problem_set_8"
+author: "Sai Saketh Boyanapalli"
+date: "October 6, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Welcome
+Notes: Explore many vriables at once!
+
+***
+
+ Create a histogram of diamond prices.
+ Facet the histogram by diamond color
+ and use cut to color the histogram bars.
+ 
+ Create a scatterplot of diamond price vs.
+ table and color the points by the cut of
+ the diamond.
+
+### Scatterplot Review
+
+```{r Scatterplot Review}
+names(diamonds)
+ggplot(aes(x = price), data = diamonds) +
+  geom_histogram(aes(color = cut)) +
+  facet_wrap(~ color, scales ="free_y" )
+ggplot(aes(y = price, x = table), data = diamonds) +
+  geom_point(aes(color = cut)) + xlim(50,70)
+```
+
+In the above plot we can see that for all colors prices tend to be skwed towards lower end.
+and diamonds with color I and J tend to be more costlier. diamond cut is not very related to price. 
+ Create a scatterplot of diamond price vs.
+ volume (x * y * z) and color the points by
+ the clarity of diamonds. Use scale on the y-axis
+ to take the log10 of price. You should also
+ omit the top 1% of diamond volumes from the plot.
+
+ Note: Volume is a very rough approximation of
+ a diamond's actual volume.
+ Note: In the link, a color palette of type
+ 'div' was used to color the scatterplot using
+ scale_color_brewer(type = 'div')
+
+```{r}
+diamonds$volume <- with(diamonds, x*y*z)
+ggplot(aes(x = volume, y = price), data = subset(diamonds, volume < quantile(volume, probs = 99/100) )) +
+  geom_point(aes(color = clarity)) + scale_y_log10()
+```
+
+
+Proportion of friendships initiated.
+
+```{r}
+pf$prop_initiated <- ifelse(pf$friend_count == 0,NA,pf$friendships_initiated/pf$friend_count)
+```
+
+ Create a line graph of the median proportion of
+ friendships initiated ('prop_initiated') vs.
+ tenure and color the line segment by
+ year_joined.bucket.
+
+ Recall, we created year_joined.bucket in Lesson 5
+ by first creating year_joined from the variable tenure.
+ Then, we used the cut function on year_joined to create
+ four bins or cohorts of users.
+
+ (2004, 2009]
+ (2009, 2011]
+ (2011, 2012]
+ (2012, 2014]
+ 
+ 
+```{r}
+pf$year_joined <- floor(2014 - pf$tenure/365)
+pf$year_joined_bucket <- cut(pf$year_joined, breaks = c(2004,2009,2011,2012,2014))
+ggplot(aes(x = tenure, y = prop_initiated), data = pf) +
+  geom_line(aes(color = year_joined_bucket), stat = 'summary', fun.y = median)
+```
+ Smooth the last plot you created of
+ of prop_initiated vs tenure colored by
+ year_joined.bucket. You can bin together ranges
+ of tenure or add a smoother to the plot.
+
+```{r}
+ggplot(aes(x = tenure, y = prop_initiated), data = pf) +
+  geom_smooth(aes(color = year_joined_bucket))
+```
+```{r}
+with(subset(pf, year_joined > 2012), summary(prop_initiated, na.rm = T))
+```
+ Create a scatter plot of the price/carat ratio
+ of diamonds. The variable x should be
+ assigned to cut. The points should be colored
+ by diamond color, and the plot should be
+ faceted by clarity.
+```{r}
+ggplot(aes(x = cut, y = price/carat), data = diamonds) +
+  facet_wrap(~clarity) +
+  geom_point(aes(color = color)) +
+  scale_color_brewer(type = 'div')
+```
+
+
